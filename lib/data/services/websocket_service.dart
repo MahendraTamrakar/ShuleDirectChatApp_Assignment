@@ -6,8 +6,11 @@ import '../../core/constants/api_constants.dart';
 
 class WebSocketService {
   WebSocketChannel? _channel;
-  final StreamController<dynamic> _streamController =
-      StreamController<dynamic>.broadcast();
+  final StreamController<dynamic> _streamController = StreamController<dynamic>.broadcast();
+  String? _lastToken;
+  int? _lastConversationId;
+  int _reconnectAttempts = 0;
+  static const int _maxReconnectAttempts = 3;
 
   Stream<dynamic> get messages => _streamController.stream;
 
@@ -15,6 +18,10 @@ class WebSocketService {
     if (_channel != null) {
       _channel!.sink.close();
     }
+
+    _lastToken = token;
+    _lastConversationId = conversationId;
+    _reconnectAttempts = 0;
 
     final url = '${ApiConstants.wsUrl}/$conversationId/?token=$token';
     _channel = WebSocketChannel.connect(Uri.parse(url));
@@ -25,12 +32,27 @@ class WebSocketService {
         _streamController.add(jsonDecode(data));
       },
       onError: (error) {
+        log('WebSocket Error: $error');
         _streamController.addError(error);
+        _reconnect();
       },
       onDone: () {
-        // Handle disconnection if needed
+        log('WebSocket disconnected');
+        _reconnect();
       },
     );
+  }
+
+  void _reconnect() {
+    if (_reconnectAttempts < _maxReconnectAttempts &&
+        _lastToken != null &&
+        _lastConversationId != null) {
+      _reconnectAttempts++;
+      log('Reconnecting... (Attempt $_reconnectAttempts)');
+      Future.delayed(Duration(seconds: 2), () {
+        connect(_lastToken!, _lastConversationId!);
+      });
+    }
   }
 
   void sendMessage(String message) {
@@ -42,6 +64,7 @@ class WebSocketService {
   void disconnect() {
     _channel?.sink.close();
     _channel = null;
+    _reconnectAttempts = 0;
   }
 
   void dispose() {

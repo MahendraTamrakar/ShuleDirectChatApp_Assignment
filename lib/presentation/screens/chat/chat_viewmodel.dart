@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../data/models/message_model.dart';
 import '../../../data/repositories/message_repository.dart';
@@ -6,9 +7,9 @@ import '../../../data/repositories/message_repository.dart';
 class ChatViewModel extends ChangeNotifier {
   final MessageRepository _messageRepository;
 
-  // We need context or logic to know who is 'me'.
   String? _currentUserEmail;
   String _chatName = '';
+  StreamSubscription? _messageSubscription;
 
   ChatViewModel(this._messageRepository);
 
@@ -33,8 +34,7 @@ class ChatViewModel extends ChangeNotifier {
       await _fetchHistory(conversationId);
       await _messageRepository.connectToChat(conversationId);
 
-      _messageRepository.liveMessages.listen((data) {
-
+      _messageSubscription = _messageRepository.liveMessages.listen((data) {
         try {
           if (data is Map<String, dynamic>) {
             final newMessage = MessageModel.fromJson(
@@ -85,6 +85,7 @@ class ChatViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _messageSubscription?.cancel();
     _messageRepository.disconnect();
     super.dispose();
   }
