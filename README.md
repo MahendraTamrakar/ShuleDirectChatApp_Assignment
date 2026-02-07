@@ -5,6 +5,8 @@ A Flutter-based real-time messaging application that enables users to engage in 
 ## Features
 
 - **User Authentication**: Secure login with Bearer token authentication
+- **Automatic Session Management**: App remembers your login and auto-restarts from conversations
+- **Splash Screen**: Splash screen with app logo on startup
 - **Token Management**: Automatic refresh token storage and 401 error handling
 - **Real-time Messaging**: WebSocket-based instant messaging
 - **Group Chats**: Create and participate in group conversations
@@ -58,6 +60,8 @@ lib/
 │
 ├── presentation/                      # UI layer
 │   ├── screens/
+│   │   ├── splash/
+│   │   │   └── splash_screen.dart     # App startup with auth check
 │   │   ├── login/
 │   │   │   ├── login_screen.dart     # Login UI and initial authentication
 │   │   │   └── login_viewmodel.dart  # Login state management
@@ -84,7 +88,20 @@ lib/
 - Dart SDK
 - Android SDK or Xcode for iOS development
 
-### Installation
+### Quick Testing with APK
+
+For quick testing without building from source, you can download the pre-built APK:
+
+1. Navigate to the `apk/` folder in the project
+2. Download the latest release APK file
+3. Transfer the APK to your Android device
+4. Enable "Unknown Sources" in your device settings
+5. Open the APK file and install it
+6. Launch the app and login with your credentials
+
+**Note**: This is the fastest way to test the app on a physical device!
+
+### Installation from Source
 
 1. Clone the repository:
 ```bash
@@ -108,32 +125,6 @@ static const String wsUrl = 'your-websocket-url';
 flutter run
 ```
 
-## Key Components
-
-### Authentication & Token Management
-- Login with email and password
-- Secure token storage using Flutter Secure Storage
-- **Refresh token support**: Automatic token refresh on 401 responses
-- Tokens persisted across app sessions
-- Automatic logout functionality
-- Error handling for token expiration
-
-### Real-time Chat
-- WebSocket connection for instant message delivery
-- Message timestamps and user identification
-- Support for group conversations
-- Inline chat view for seamless experience
-- Dynamic conversation name display in chat header
-- Group avatar with first letter in uppercase
-- Custom background image support
-
-### State Management
-- Provider pattern with ChangeNotifier for reactive UI
-- Separate ViewModels for each screen
-- Repository pattern for data abstraction
-- Automatic data initialization on ViewModel creation
-- Hot reload state persistence for smooth development
-
 ## Dependencies
 
 | Package | Version | Purpose |
@@ -149,24 +140,28 @@ flutter run
 | flutter_svg | ^2.2.2 | SVG rendering |
 | flutter_launcher_icons | ^0.14.4 | App icon generation |
 
-## API Endpoints
-
-Base URL: `https://dev-api.supersourcing.com/shuledirect-service`
-
-- **Login**: `POST /candidates/login/`
-- **Conversations**: `GET /chat/conversations/`
-- **Messages**: `GET /chat/messages/`
-- **WebSocket**: `wss://dev-api.supersourcing.com/shuledirect-service/ws/chat`
 
 ## Navigation Flow
 
 ```
-Login Screen
+Splash Screen (Auto Auth Check)
     ↓
-Conversations Screen (inline chat or navigate to Chat Screen)
-    ↓
-Chat Screen (full-screen view)
+    ├─→ Conversations Screen (if logged in)
+    │       ↓
+    │   Chat Screen (full-screen view)
+    │
+    └─→ Login Screen (if not logged in)
+            ↓
+        Conversations Screen (after login)
+            ↓
+        Chat Screen (full-screen view)
 ```
+
+**Splash Screen Features**:
+- Displays app logo from `assets/app_icon/app.png`
+- Loads for 2 seconds for branding
+- Automatically checks if user is logged in
+- Redirects to appropriate screen based on auth status
 
 ## Code Architecture
 
@@ -194,58 +189,50 @@ flutter build appbundle
 flutter build ios
 ```
 
-## Recent Updates (v1.1.0)
-
-### Security Enhancements
-- ✅ Added refresh token extraction from API response headers
-- ✅ Secure storage of refresh tokens in Flutter Secure Storage
-- ✅ Automatic token restoration on app startup
-- ✅ 401 error interceptor for unauthorized responses
-- ✅ Token update mechanism for silent authentication
-
-### UI/UX Improvements
-- ✅ Mock data implementation for conversations (Chemistry Group, Shule Direct Official)
-- ✅ Dynamic chat name display from selected conversation
-- ✅ Group avatar with first letter initial in circle
-- ✅ Background image integration in chat screen
-- ✅ Border separator above message input area
-- ✅ Improved conversation tile rendering with dynamic colors
-
-### State Management Fixes
-- ✅ ViewModel auto-initialization on creation (fixes hot reload data loss)
-- ✅ Proper loading state handling (starts with `true`)
-- ✅ Removed redundant initState callbacks
-
-### API Integration
-- ✅ Simplified token extraction logic
-- ✅ Response parsing with ternary operators
-- ✅ Debug logging with `kDebugMode` check
-
-## Troubleshooting
-
-### Token Refresh Implementation
-When a 401 response is received:
-1. The `ApiClient` triggers the `_onUnauthorized` callback
-2. Call your API's refresh endpoint with the stored refresh token
-3. Update the access token using `AuthRepository.updateToken(newToken)`
-4. Retry the original request with the new token
-
-Example:
-```dart
-// In your authentication logic
-_apiClient.setUnauthorizedCallback((message) async {
-  final refreshToken = await _authRepository.getRefreshToken();
-  if (refreshToken != null) {
-    // Call refresh endpoint
-    // final newToken = await refreshAccessToken(refreshToken);
-    // await _authRepository.updateToken(newToken);
-  }
-});
-```
-
 ## Testing Data
 
-### Mock Conversations (Development)
-The app currently uses mock data for conversation development:
+### Login Credentials (Development)
+```
+Email: kenu@yopmail.com
+Password: kenu1234
+```
+
+### Mock Conversations (Fallback)
+When the API returns empty conversations, the app automatically uses mock data:
 - **Chemistry Group** - "Group created by you"
 - **Shule Direct Official** - "Albert: Have you done assignments?"
+
+**Note**: These mock conversations are for UI testing only. WebSocket connections to mock conversations may fail if the IDs don't exist on the server.
+
+## APK Distribution
+
+Pre-built APK files are available in the `apk/` folder for easy testing without building from source:
+
+
+### Quick Installation
+
+**Method 1: Using ADB (Recommended)**
+```bash
+adb install apk/app-release.apk
+```
+
+**Method 2: Manual Installation**
+1. Download APK from `apk/` folder
+2. Enable "Unknown Sources" in device Settings → Security
+3. Copy APK to your Android device
+4. Open file manager and tap the APK
+5. Follow the installation prompts
+
+### Testing the Installed App
+
+1. **Launch the app** - You'll see the splash screen with the Shule Direct logo
+2. **Auto-login** - If you were previously logged in, it will skip to conversations
+3. **Manual login** - If first time, use test credentials:
+   ```
+   Email: kenu@yopmail.com
+   Password: kenu1234
+   ```
+4. **Explore conversations** - Browse available conversations
+5. **Send messages** - Tap any conversation to open chat
+6. **Reliable persistence** - Close and reopen the app; your session persists!
+```
