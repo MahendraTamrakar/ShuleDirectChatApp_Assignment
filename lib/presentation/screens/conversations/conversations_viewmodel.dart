@@ -7,12 +7,14 @@ class ConversationsViewModel extends ChangeNotifier {
   final ChatRepository _chatRepository;
   final AuthRepository _authRepository;
 
-  ConversationsViewModel(this._chatRepository, this._authRepository);
+  ConversationsViewModel(this._chatRepository, this._authRepository) {
+    _initializeData();
+  }
 
   List<ConversationModel> _conversations = [];
   List<ConversationModel> get conversations => _conversations;
 
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool get isLoading => _isLoading;
 
   String? _errorMessage;
@@ -23,6 +25,11 @@ class ConversationsViewModel extends ChangeNotifier {
 
   String? _userEmail;
   String? get userEmail => _userEmail;
+
+  void _initializeData() {
+    loadUserInitial();
+    fetchConversations();
+  }
 
   Future<void> fetchConversations() async {
     _isLoading = true;

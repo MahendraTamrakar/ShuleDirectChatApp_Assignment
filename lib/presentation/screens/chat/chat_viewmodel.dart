@@ -7,8 +7,8 @@ class ChatViewModel extends ChangeNotifier {
   final MessageRepository _messageRepository;
 
   // We need context or logic to know who is 'me'.
-  // For now we assume API provides info or we check email locally
   String? _currentUserEmail;
+  String _chatName = '';
 
   ChatViewModel(this._messageRepository);
 
@@ -21,7 +21,10 @@ class ChatViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  void init(int conversationId) async {
+  String get chatName => _chatName;
+
+  void init(int conversationId, {String chatName = ''}) async {
+    _chatName = chatName;
     _isLoading = true;
     notifyListeners();
 
@@ -31,18 +34,14 @@ class ChatViewModel extends ChangeNotifier {
       await _messageRepository.connectToChat(conversationId);
 
       _messageRepository.liveMessages.listen((data) {
-        // Parse incoming message. Assuming generic structure for now.
-        // It might be a full message object or just content
-        // Adjust based on real API
+
         try {
-          // If structure matches MessageModel.fromJson, use it
-          // Often WS sends only the new message object
           if (data is Map<String, dynamic>) {
             final newMessage = MessageModel.fromJson(
               data,
               currentUserEmail: _currentUserEmail,
             );
-            _messages.insert(0, newMessage); // Insert at 0 for reverse list
+            _messages.insert(0, newMessage);
             notifyListeners();
           }
         } catch (e) {

@@ -1,10 +1,11 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../constants/api_constants.dart';
 
 class ApiClient {
   late Dio _dio;
-  // String? _authToken; // Removed unused field
+  Function(String)? _onUnauthorized;
 
   ApiClient() {
     _dio = Dio(
@@ -19,24 +20,44 @@ class ApiClient {
       ),
     );
 
-    // Add logging interceptor
+    // Add logging interceptor for debugging
+    if (kDebugMode) {
+      _dio.interceptors.add(
+        LogInterceptor(
+          requestBody: true,
+          responseBody: true,
+          logPrint: (obj) => log('API Log: $obj'),
+        ),
+      );
+    }
+
+    // Add error interceptor for 401 handling
     _dio.interceptors.add(
-      LogInterceptor(
-        requestBody: true,
-        responseBody: true,
-        logPrint: (obj) => log('API Log: $obj'),
+      InterceptorsWrapper(
+        onError: (DioException error, handler) {
+          if (error.response?.statusCode == 401) {
+            _onUnauthorized?.call('Unauthorized - Token expired');
+          }
+          return handler.next(error);
+        },
       ),
     );
   }
 
+  void setUnauthorizedCallback(Function(String) callback) {
+    _onUnauthorized = callback;
+  }
+
   void setToken(String token) {
-    // _authToken = token;
     _dio.options.headers[ApiConstants.authHeader] =
         '${ApiConstants.bearer} $token';
   }
 
+  void setRefreshToken(String refreshToken) {
+    _dio.options.headers['X-Refresh-Token'] = refreshToken;
+  }
+
   void clearToken() {
-    // _authToken = null;
     _dio.options.headers.remove(ApiConstants.authHeader);
   }
 

@@ -8,12 +8,12 @@ class ScoreGaugeWidget extends StatefulWidget {
   final double size;
 
   const ScoreGaugeWidget({
-    Key? key,
+    super.key,
     required this.score,
     this.minScore = 300,
     this.maxScore = 900,
     this.size = 200,
-  }) : super(key: key);
+  });
 
   @override
   State<ScoreGaugeWidget> createState() => _ScoreGaugeWidgetState();

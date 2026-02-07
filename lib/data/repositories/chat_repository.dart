@@ -6,7 +6,6 @@ class ChatRepository {
 
   ChatRepository(this._chatService);
 
-  Future<List<ConversationModel>> getConversations() async {
-    return await _chatService.getConversations();
-  }
+  Future<List<ConversationModel>> getConversations() async =>
+      _chatService.getConversations();
 }

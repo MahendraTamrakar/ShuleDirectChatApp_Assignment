@@ -9,11 +9,11 @@ class Helpers {
       if (dateTime.year == now.year &&
           dateTime.month == now.month &&
           dateTime.day == now.day) {
-        return DateFormat.jm().format(dateTime); // 5:30 PM
+        return DateFormat.jm().format(dateTime);
       } else if (now.difference(dateTime).inDays < 7) {
-        return DateFormat.E().format(dateTime); // Mon
+        return DateFormat.E().format(dateTime);
       } else {
-        return DateFormat.yMMMd().format(dateTime); // Jan 1, 2024
+        return DateFormat.yMMMd().format(dateTime);
       }
     } catch (e) {
       return '';

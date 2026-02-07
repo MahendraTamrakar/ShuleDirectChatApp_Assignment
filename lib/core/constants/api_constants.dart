@@ -9,7 +9,7 @@ class ApiConstants {
   static const String conversations = '$baseUrl/chat/conversations/';
   static const String messages = '$baseUrl/chat/messages/';
 
-  // Header Keys
+
   static const String authHeader = 'Authorization';
   static const String bearer = 'Bearer';
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-// import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../routes/app_routes.dart';
-// import '../../../../core/utils/helpers.dart';
 import 'conversations_viewmodel.dart';
 import '../../../data/repositories/auth_repository.dart';
+import '../../../data/models/conversation_model.dart';
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
@@ -26,9 +25,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         statusBarBrightness: Brightness.dark,
       ),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ConversationsViewModel>().loadUserInitial();
-    });
   }
 
   void _logout() async {
@@ -44,7 +40,12 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        elevation: 3,
+        elevation: 2,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: AppColors.primary,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
         shadowColor: Colors.black26,
         surfaceTintColor: Colors.transparent,
         titleSpacing: 0,
@@ -87,7 +88,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
-                    color: Colors.redAccent,
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                   child: const Text(
@@ -169,7 +170,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                             color: const Color.fromARGB(76, 166, 205, 237),
                           ),
                         ),
-                      
+
                         Container(
                           width: 50,
                           decoration: BoxDecoration(
@@ -268,31 +269,39 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           ),
 
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                _buildMockConversationTile(
-                  context,
-                  name: 'Chemistry Group',
-                  message: 'Group created by you',
-                  time: '12 min',
-                  color: Colors.pink.shade100,
-                  initial: 'C',
-                  isOnline: true,
-                ),
-                _buildMockConversationTile(
-                  context,
-                  name: 'Shule Direct Official',
-                  message: 'Albert: Have you done assignments?',
-                  time: '12 min',
-                  color:
-                      Colors
-                          .orange
-                          .shade100, // Roughly matching screenshot logo color
-                  initial: 'S',
-                  isOnline: true,
-                ),
-              ],
+            child: Consumer<ConversationsViewModel>(
+              builder: (context, viewModel, _) {
+                if (viewModel.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (viewModel.errorMessage != null) {
+                  return Center(
+                    child: Text(
+                      viewModel.errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+
+                if (viewModel.conversations.isEmpty) {
+                  return const Center(
+                    child: Text('No conversations yet'),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: viewModel.conversations.length,
+                  itemBuilder: (context, index) {
+                    final conversation = viewModel.conversations[index];
+                    return _buildConversationTile(
+                      context,
+                      conversation: conversation,
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -300,21 +309,24 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     );
   }
 
-  Widget _buildMockConversationTile(
+  Widget _buildConversationTile(
     BuildContext context, {
-    required String name,
-    required String message,
-    required String time,
-    required Color color,
-    required String initial,
-    bool isOnline = false,
+    required ConversationModel conversation,
   }) {
+    final colors = [
+      Colors.pink.shade100,
+      Colors.orange.shade100,
+      Colors.blue.shade100,
+      Colors.green.shade100,
+      Colors.purple.shade100,
+    ];
+    final color = colors[conversation.id % colors.length];
+    final initial = conversation.name.isNotEmpty ? conversation.name[0].toUpperCase() : 'U';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        //        borderRadius: BorderRadius.circular(12), // Reference doesn't show card style, but clean list.
-        //        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)], // Optional
       ),
       child: ListTile(
         contentPadding: EdgeInsets.zero,
@@ -332,44 +344,43 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 ),
               ),
             ),
-            if (isOnline)
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
                 ),
               ),
+            ),
           ],
         ),
         title: Text(
-          name,
+          conversation.name,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
           child: Text(
-            message,
+            conversation.lastMessage,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(color: Colors.grey[600]),
           ),
         ),
         trailing: Text(
-          time,
+          conversation.timestamp,
           style: TextStyle(color: Colors.grey[400], fontSize: 12),
         ),
         onTap: () {
           Navigator.pushNamed(
             context,
             AppRoutes.chat,
-            arguments: {'name': name, 'id': 1},
+            arguments: {'name': conversation.name, 'id': conversation.id},
           );
         },
       ),
