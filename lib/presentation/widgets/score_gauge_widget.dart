@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shule_direct_chat_app/core/constants/app_colors.dart';
 
 class ScoreGaugeWidget extends StatefulWidget {
   final double score;
@@ -96,13 +97,7 @@ class _ScoreGaugeWidgetState extends State<ScoreGaugeWidget>
                   color: null,
                   strokeWidth: 6.0,
                   gradient: const SweepGradient(
-                    colors: [
-                      Color(0xFFFF0000),
-                      Color(0xFFFFAB40),
-                      Color(0xFFFFD740),
-                      Color(0xFF69F0AE),
-                      Color(0xFF1D9727),
-                    ],
+                    colors: AppColors.scoreGradient,
                     stops: [0.0, 0.167, 0.333, 0.5, 0.667],
                     transform: GradientRotation(2.61799),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../data/repositories/auth_repository.dart';
@@ -15,11 +16,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: AppColors.primary,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+    );
     _checkAuth();
   }
 
   Future<void> _checkAuth() async {
-    // Artificial delay for splash effect
     await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;

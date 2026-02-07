@@ -9,7 +9,6 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: ColorScheme.fromSwatch().copyWith(
         primary: AppColors.primary,
-        secondary: AppColors.secondary,
         surface: AppColors.surface,
         error: AppColors.error,
       ),

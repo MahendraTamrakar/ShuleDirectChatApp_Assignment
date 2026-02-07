@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 // import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -19,6 +21,13 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: AppColors.primary,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final conversationId = ModalRoute.of(context)!.settings.arguments as int;
       context.read<ChatViewModel>().init(conversationId);
@@ -82,10 +91,9 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Container(
         color: const Color(
           0xFFFFF5F5,
-        ), // Light red/pinkish background pattern placeholder
+        ),
         child: Column(
           children: [
-            // System Message
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Container(
@@ -94,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE0F2F1), // Light green
+                  color: const Color(0xFFE0F2F1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Text(
@@ -133,7 +141,6 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
 
-            // Input Area
             SafeArea(
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -145,38 +152,36 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     Expanded(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
+                        height: 48,
+
+                        alignment: Alignment.center,
                         child: TextField(
                           controller: _messageController,
                           decoration: const InputDecoration(
                             hintText: 'Enter Message...',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
                             border: InputBorder.none,
-                            icon: Icon(
-                              Icons.emoji_emotions_outlined,
-                              color: Colors.grey,
-                            ),
-                            suffixIcon: Icon(
-                              Icons.attach_file,
-                              color: Colors.grey,
-                            ),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                           ),
                           textCapitalization: TextCapitalization.sentences,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 25),
+                    SvgPicture.asset('assets/icons/file.svg', height: 18, width: 18),
+                    const SizedBox(width: 25),
+                    SvgPicture.asset('assets/icons/emoji.svg', height: 18, width: 18),
+                    const SizedBox(width: 25),
                     Container(
                       decoration: BoxDecoration(
                         color: AppColors.primary,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.send, color: Colors.white),
+                        icon: const Icon(Icons.send, color: Colors.white, size: 21,),
                         onPressed: _sendMessage,
                       ),
                     ),

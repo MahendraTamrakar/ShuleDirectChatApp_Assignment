@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
+import 'core/constants/app_colors.dart';
 import 'routes/app_routes.dart';
 import 'core/network/api_client.dart';
 import 'data/services/auth_service.dart';
@@ -16,6 +18,13 @@ import 'presentation/screens/chat/chat_viewmodel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: AppColors.primary,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -61,11 +70,11 @@ class MyApp extends StatelessWidget {
           create: (context) => LoginViewModel(context.read<AuthRepository>()),
           update: (_, repo, viewModel) => LoginViewModel(repo),
         ),
-        ChangeNotifierProxyProvider<ChatRepository, ConversationsViewModel>(
+        ChangeNotifierProxyProvider2<ChatRepository, AuthRepository, ConversationsViewModel>(
           create:
               (context) =>
-                  ConversationsViewModel(context.read<ChatRepository>()),
-          update: (_, repo, viewModel) => ConversationsViewModel(repo),
+                  ConversationsViewModel(context.read<ChatRepository>(), context.read<AuthRepository>()),
+          update: (_, chatRepo, authRepo, viewModel) => ConversationsViewModel(chatRepo, authRepo),
         ),
         ChangeNotifierProxyProvider<MessageRepository, ChatViewModel>(
           create: (context) => ChatViewModel(context.read<MessageRepository>()),
