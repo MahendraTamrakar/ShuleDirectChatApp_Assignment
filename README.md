@@ -243,61 +243,9 @@ _apiClient.setUnauthorizedCallback((message) async {
 });
 ```
 
-### WebSocket Connection Issues
-- Verify WebSocket URL in `api_constants.dart`
-- Check internet connectivity
-- Ensure authentication token is valid
-- Verify refresh token is available for re-authentication
-
-### Message Not Sending
-- Validate message content is not empty
-- Check WebSocket connection status
-- Verify user has necessary permissions
-- Ensure token hasn't expired (check via 401 responses)
-
-## Future Enhancements
-
-- User profile management
-- Message search functionality
-- Message reactions and emojis
-- User typing indicators
-- Message edit and delete
-- File/Media sharing in chat
-- Read receipts
-- User muting/blocking
-- Chat notifications
-- Message encryption
-
 ## Testing Data
 
 ### Mock Conversations (Development)
 The app currently uses mock data for conversation development:
 - **Chemistry Group** - "Group created by you"
 - **Shule Direct Official** - "Albert: Have you done assignments?"
-
-To switch to API calls, modify `lib/data/services/chat_service.dart` and uncomment the API call section.
-
-### Test Credentials
-- **Email**: `kenu@yopmail.com`
-- **Password**: `kenu1234`
-- **Token Expiry**: 7 days
-### Test Credentials
-- **Email**: `kenu@yopmail.com`
-- **Password**: `kenu1234`
-- **Token Expiry**: 7 days
-- **Refresh Token**: Stored securely and can be used for re-authentication
-
-## Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request
-
-## License
-
-This project is proprietary and confidential.
-
-## Support
-
-For issues and support, please contact the development team.
