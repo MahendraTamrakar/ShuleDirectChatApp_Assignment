@@ -44,7 +44,9 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        elevation: 0,
+        elevation: 3,
+        shadowColor: Colors.black26,
+        surfaceTintColor: Colors.transparent,
         titleSpacing: 0,
         toolbarHeight: 70,
         title: Padding(
@@ -56,19 +58,19 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 hintText: 'Placeholder text here',
                 hintStyle: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary
+                  color: AppColors.textSecondary,
                 ),
                 suffixIcon: Icon(Icons.search, color: Colors.black54),
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 12,
+                ),
               ),
             ),
           ),
         ),
-        leading: Icon(
-                Icons.menu,
-                color: Colors.black,
-              ),
+        leading: Icon(Icons.menu, color: Colors.black),
         actions: [
           Stack(
             alignment: Alignment.center,
@@ -124,7 +126,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                   backgroundColor: const Color(0xFF333333),
                   child: Text(
                     viewModel.userInitial,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 );
               },
@@ -132,52 +137,101 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           ),
           const SizedBox(width: 16),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Groups',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.pink.shade50,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: const [
-                      Text(
-                        'Form - 1',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Colors.black,
-                        size: 18,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
       body: Column(
         children: [
+          Container(
+            color: const Color.fromARGB(255, 255, 253, 253),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    left: MediaQuery.of(context).size.width * 0.48,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 50,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(100),
+                              topRight: Radius.circular(12),
+                              bottomLeft: Radius.circular(12),
+                              bottomRight: Radius.circular(12),
+                            ),
+                            color: const Color.fromARGB(76, 166, 205, 237),
+                          ),
+                        ),
+                      
+                        Container(
+                          width: 50,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(100),
+                              topRight: Radius.circular(100),
+                              bottomLeft: Radius.circular(12),
+                              bottomRight: Radius.circular(12),
+                            ),
+                            color: const Color.fromARGB(73, 255, 237, 251),
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
+                              bottomLeft: Radius.circular(100),
+                              bottomRight: Radius.circular(12),
+                            ),
+                            color: const Color.fromARGB(74, 216, 255, 227),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Groups',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: const [
+                          Text(
+                            'Form - 1',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.black,
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
             child: TextField(
@@ -194,7 +248,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 ),
                 filled: true,
                 fillColor: Color.fromARGB(255, 255, 255, 255),
-                contentPadding: EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                contentPadding: EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 12,
+                ),
               ),
             ),
           ),
