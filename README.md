@@ -5,12 +5,15 @@ A Flutter-based real-time messaging application that enables users to engage in 
 ## Features
 
 - **User Authentication**: Secure login with Bearer token authentication
+- **Token Management**: Automatic refresh token storage and 401 error handling
 - **Real-time Messaging**: WebSocket-based instant messaging
 - **Group Chats**: Create and participate in group conversations
 - **Chat History**: View message history with timestamps
 - **User Presence**: Real-time online status indicators
 - **Inline Chat**: Open conversations directly within the conversations list
-- **Secure Storage**: Device-level secure data storage
+- **Secure Storage**: Device-level secure data storage with refresh tokens
+- **Dynamic UI**: Chat screen displays selected conversation name with first letter avatar
+- **Background Support**: Custom background images in chat screens
 
 ## Technology Stack
 
@@ -107,21 +110,29 @@ flutter run
 
 ## Key Components
 
-### Authentication
+### Authentication & Token Management
 - Login with email and password
 - Secure token storage using Flutter Secure Storage
+- **Refresh token support**: Automatic token refresh on 401 responses
+- Tokens persisted across app sessions
 - Automatic logout functionality
+- Error handling for token expiration
 
 ### Real-time Chat
 - WebSocket connection for instant message delivery
 - Message timestamps and user identification
 - Support for group conversations
 - Inline chat view for seamless experience
+- Dynamic conversation name display in chat header
+- Group avatar with first letter in uppercase
+- Custom background image support
 
 ### State Management
 - Provider pattern with ChangeNotifier for reactive UI
 - Separate ViewModels for each screen
 - Repository pattern for data abstraction
+- Automatic data initialization on ViewModel creation
+- Hot reload state persistence for smooth development
 
 ## Dependencies
 
@@ -183,27 +194,98 @@ flutter build appbundle
 flutter build ios
 ```
 
+## Recent Updates (v1.1.0)
+
+### Security Enhancements
+- ✅ Added refresh token extraction from API response headers
+- ✅ Secure storage of refresh tokens in Flutter Secure Storage
+- ✅ Automatic token restoration on app startup
+- ✅ 401 error interceptor for unauthorized responses
+- ✅ Token update mechanism for silent authentication
+
+### UI/UX Improvements
+- ✅ Mock data implementation for conversations (Chemistry Group, Shule Direct Official)
+- ✅ Dynamic chat name display from selected conversation
+- ✅ Group avatar with first letter initial in circle
+- ✅ Background image integration in chat screen
+- ✅ Border separator above message input area
+- ✅ Improved conversation tile rendering with dynamic colors
+
+### State Management Fixes
+- ✅ ViewModel auto-initialization on creation (fixes hot reload data loss)
+- ✅ Proper loading state handling (starts with `true`)
+- ✅ Removed redundant initState callbacks
+
+### API Integration
+- ✅ Simplified token extraction logic
+- ✅ Response parsing with ternary operators
+- ✅ Debug logging with `kDebugMode` check
+
 ## Troubleshooting
+
+### Token Refresh Implementation
+When a 401 response is received:
+1. The `ApiClient` triggers the `_onUnauthorized` callback
+2. Call your API's refresh endpoint with the stored refresh token
+3. Update the access token using `AuthRepository.updateToken(newToken)`
+4. Retry the original request with the new token
+
+Example:
+```dart
+// In your authentication logic
+_apiClient.setUnauthorizedCallback((message) async {
+  final refreshToken = await _authRepository.getRefreshToken();
+  if (refreshToken != null) {
+    // Call refresh endpoint
+    // final newToken = await refreshAccessToken(refreshToken);
+    // await _authRepository.updateToken(newToken);
+  }
+});
+```
 
 ### WebSocket Connection Issues
 - Verify WebSocket URL in `api_constants.dart`
 - Check internet connectivity
 - Ensure authentication token is valid
+- Verify refresh token is available for re-authentication
 
 ### Message Not Sending
 - Validate message content is not empty
 - Check WebSocket connection status
 - Verify user has necessary permissions
+- Ensure token hasn't expired (check via 401 responses)
 
 ## Future Enhancements
 
 - User profile management
 - Message search functionality
-- Media sharing (images, files)
-- Typing indicators
-- Message reactions/emojis
-- User blocking
+- Message reactions and emojis
+- User typing indicators
+- Message edit and delete
+- File/Media sharing in chat
 - Read receipts
+- User muting/blocking
+- Chat notifications
+- Message encryption
+
+## Testing Data
+
+### Mock Conversations (Development)
+The app currently uses mock data for conversation development:
+- **Chemistry Group** - "Group created by you"
+- **Shule Direct Official** - "Albert: Have you done assignments?"
+
+To switch to API calls, modify `lib/data/services/chat_service.dart` and uncomment the API call section.
+
+### Test Credentials
+- **Email**: `kenu@yopmail.com`
+- **Password**: `kenu1234`
+- **Token Expiry**: 7 days
+### Test Credentials
+- **Email**: `kenu@yopmail.com`
+- **Password**: `kenu1234`
+- **Token Expiry**: 7 days
+- **Refresh Token**: Stored securely and can be used for re-authentication
 
 ## Contributing
 
