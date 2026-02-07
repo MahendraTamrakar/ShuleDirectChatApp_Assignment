@@ -2,27 +2,12 @@
 
 A Flutter-based real-time messaging application that enables users to engage in group and direct conversations with WebSocket support for real-time updates.
 
-## Features
-
-- **User Authentication**: Secure login with Bearer token authentication
-- **Automatic Session Management**: App remembers your login and auto-restarts from conversations
-- **Splash Screen**: Splash screen with app logo on startup
-- **Token Management**: Automatic refresh token storage and 401 error handling
-- **Real-time Messaging**: WebSocket-based instant messaging
-- **Group Chats**: Create and participate in group conversations
-- **Chat History**: View message history with timestamps
-- **User Presence**: Real-time online status indicators
-- **Inline Chat**: Open conversations directly within the conversations list
-- **Secure Storage**: Device-level secure data storage with refresh tokens
-- **Dynamic UI**: Chat screen displays selected conversation name with first letter avatar
-- **Background Support**: Custom background images in chat screens
-
 ## Technology Stack
 
 - **Framework**: Flutter 3.7.2+
 - **State Management**: Provider
 - **Networking**: Dio for HTTP, WebSocket for real-time communication
-- **Storage**: Flutter Secure Storage, Shared Preferences
+- **Storage**: Flutter Secure Storage
 - **UI**: Material Design
 
 ## Project Structure
